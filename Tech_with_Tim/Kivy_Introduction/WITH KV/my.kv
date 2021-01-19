@@ -1,0 +1,23 @@
+#:kivy 2.0.0
+
+<MyGrid>
+    GridLayout:
+        cols:1
+
+        GridLayout:
+            cols:2
+
+            Label:
+                text: "First Name :"
+
+            TextInput:
+                multiline: False
+            
+            Label:
+                text: "Last Name :"
+            
+            TextInput:
+                multiline: False
+
+    Button:
+        text: "Click Me"
