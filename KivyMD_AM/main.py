@@ -1,14 +1,17 @@
 from kivymd.app import MDApp
+from kivymd import icon_definitions
 from kivymd.material_resources import STANDARD_INCREMENT
 
 from kivy.lang import Builder
 from kivy.core.window import Window
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.screenmanager import Screen, ScreenManager
 
 
 # Window Size
 Window.size = (300, 600)
 
-KV = '''
+Intro = '''
 Screen:
     Image:
         id: logo
@@ -45,12 +48,108 @@ Screen:
 
 
 '''
+SignIn = """
+Screen:
+    GridLayout:
+        id:sign_in_page 
+        rows: 4
+
+        MDLabel:
+            theme_text_color: "Custom"
+            text_color: 235/255, 235/255, 235/255, 0.7
+            adaptive_size: True
+            halign: "center"
+            valign: "center"
+            font_style: "H5"
+            text: "SIGN IN"
+
+        GridLayout:
+            cols: 3
+            rows: 2
+            row_force_default: True
+            row_default_height: 80
+            
+            MDLabel:
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+
+
+            MDTextField:
+                hint_text: "Enter Email"
+                size_hint_x:None
+                width: 250
+                icon_right: "account"
+                theme_text_color: "Custom"
+                text_color: 235/255, 235/255, 235/255, 0.7
+            
+            MDLabel:
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+            
+            MDLabel:
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+
+
+            MDTextField:
+                hint_text: "Password"
+                size_hint_x:None
+                width: 250
+                icon_right: "account-key"
+                theme_text_color: "Custom"
+                text_color: 235/255, 235/255, 235/255, 0.7
+            
+            MDLabel:
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+            
+        MDLabel:
+            theme_text_color: "Custom"
+            text_color: 235/255, 235/255, 235/255, 0.7
+            adaptive_size: True
+            halign: "center"
+            valign: "center"
+            font_style: "H5"
+            text: "SIGN IN"
+
+        GridLayout:
+            cols: 2
+            row_force_default: True
+            row_default_height: 40
+                
+            MDLabel:
+                theme_text_color: "Custom"
+                text_color: 235/255, 235/255, 235/255, 0.7
+                size_hint: root.center_x - dp(10), 50
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+                font_style: "Subtitle1"
+                text: "SIGN UP"
+            
+            MDLabel:
+                theme_text_color: "Custom"
+                text_color: 235/255, 235/255, 235/255, 0.7
+                size_hint: root.center_x + dp(10), 50
+                adaptive_size: True
+                halign: "center"
+                valign: "center"
+                font_style: "Subtitle1"
+                text: "RESET PASSWORD"
+
+    
+
+"""
 
 
 class MainApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        return Builder.load_string(KV)
+        return Builder.load_string(SignIn)
 
 
 MainApp().run()
