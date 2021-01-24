@@ -1,89 +1,49 @@
-from kivy.lang import Builder
-from kivy.properties import StringProperty
-from kivy.uix.screenmanager import Screen
-from kivymd.icon_definitions import md_icons
+#  Kivy MD Imports
 from kivymd.app import MDApp
-from kivymd.uix.list import OneLineIconListItem
+from kivymd import icon_definitions
+from kivymd.uix.button import MDRaisedButton
+from kivymd.material_resources import STANDARD_INCREMENT
 
-Builder.load_string(
-    '''
-#:import images_path kivymd.images_path
-
-<CustomOneLineIconListItem>:
-    IconLeftWidget:
-        icon: root.icon
-
-<PreviousMDIcons>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        spacing: dp(10)
-        padding: dp(20)
-
-        MDBoxLayout:
-            adaptive_height: True
-    
-            MDIconButton:
-                icon: 'magnify'
-
-            MDTextField:
-                id: search_field
-                hint_text: 'Search icon'
-                on_text: root.set_list_md_icons(self.text, True)
-
-        RecycleView:
-            id: rv
-            key_viewclass: 'viewclass'
-            key_size: 'height'
-
-            RecycleBoxLayout:
-                padding: dp(10)
-                default_size: None, dp(48)
-                default_size_hint: 1, None
-                size_hint_y: None
-                height: self.minimum_height
-                orientation: 'vertical'
-'''
-)
+# Kivy Imports
+from kivy.clock import Clock
+from kivy.lang import Builder
+from kivy.animation import Animation
+from kivy.core.window import Window
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.screenmanager import Screen, ScreenManager, NoTransition
 
 
-class CustomOneLineIconListItem(OneLineIconListItem):
-    icon = StringProperty()
+# Window Size
+Window.size = (300, 600)
 
 
-class PreviousMDIcons(Screen):
-    def set_list_md_icons(self, text="", search=False):
-        '''Builds a list of icons for the screen MDIcons.'''
+# Screen Manager
+class ScreenManagement(ScreenManager):
+    def __init__(self, **kwargs):
+        super(ScreenManagement, self).__init__(**kwargs)
+        Clock.schedule_once(self.transit_scene, 3)
 
-        def add_icon_item(name_icon):
-            self.ids.rv.data.append(
-                {
-                    "viewclass": "CustomOneLineIconListItem",
-                    "icon": name_icon,
-                    "text": name_icon,
-                    "callback": lambda x: x,
-                }
-            )
+    def transit_scene(self, *args):
+        self.current = "log_in_Screen"
 
-        self.ids.rv.data = []
-        for name_icon in md_icons.keys():
-            if search:
-                if text in name_icon:
-                    add_icon_item(name_icon)
-            else:
-                add_icon_item(name_icon)
+
+# Screens
+class Intro_view_Screen(Screen):
+    pass
+
+
+class Login_view_Screen(Screen):
+    pass
 
 
 class MainApp(MDApp):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.screen = PreviousMDIcons()
 
     def build(self):
-        return self.screen
+        self.theme_cls.theme_style = "Dark"
+        return ScreenManagement()
 
-    def on_start(self):
-        self.screen.set_list_md_icons()
+    def verify(self, email, password):
+        print(email, password)
 
 
 MainApp().run()

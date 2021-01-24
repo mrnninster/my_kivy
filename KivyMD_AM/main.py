@@ -1,155 +1,49 @@
+#  Kivy MD Imports
 from kivymd.app import MDApp
 from kivymd import icon_definitions
+from kivymd.uix.button import MDRaisedButton
 from kivymd.material_resources import STANDARD_INCREMENT
 
+# Kivy Imports
+from kivy.clock import Clock
 from kivy.lang import Builder
+from kivy.animation import Animation
 from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.screenmanager import Screen, ScreenManager, NoTransition
 
 
 # Window Size
 Window.size = (300, 600)
 
-Intro = '''
-Screen:
-    Image:
-        id: logo
-        source: "assets/i4.jpg"
-        size_hint: None, None
-        size: 200, 50
-        allow_stretch: True
-        keep_ratio: False
-        pos_hint: {"center_x" : 0.5}
-        y : root.height * 0.8
 
-    BoxLayout:
-        id: Welcome
-        orientation: "vertical"
-        adaptive_size: True
-        pos_hint: {"center_x": .5}
+# Screen Manager
+class ScreenManagement(ScreenManager):
+    def __init__(self, **kwargs):
+        super(ScreenManagement, self).__init__(**kwargs)
+        Clock.schedule_once(self.transit_scene, 3)
 
-        MDLabel:
-            theme_text_color: "Custom"
-            text_color: 235/255, 235/255, 235/255, 0.7
-            adaptive_size: True
-            halign: "center"
-            valign: "center"
-            font_style: "H5"
-            text: "ACTIVITY MANAGER"
-
-        MDLabel:
-            theme_text_color: "Custom"
-            text_color: 235/255, 235/255, 235/255, 0.7
-            adaptive_height: True
-            halign: "center"
-            font_style: "Button"
-            text: "Powered By\\n AGRO AI"
+    def transit_scene(self, *args):
+        self.current = "log_in_Screen"
 
 
-'''
-SignIn = """
-Screen:
-    GridLayout:
-        id:sign_in_page 
-        rows: 4
-
-        MDLabel:
-            theme_text_color: "Custom"
-            text_color: 235/255, 235/255, 235/255, 0.7
-            adaptive_size: True
-            halign: "center"
-            valign: "center"
-            font_style: "H5"
-            text: "SIGN IN"
-
-        GridLayout:
-            cols: 3
-            rows: 2
-            row_force_default: True
-            row_default_height: 80
-            
-            MDLabel:
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
+# Screens
+class Intro_view_Screen(Screen):
+    pass
 
 
-            MDTextField:
-                hint_text: "Enter Email"
-                size_hint_x:None
-                width: 250
-                icon_right: "account"
-                theme_text_color: "Custom"
-                text_color: 235/255, 235/255, 235/255, 0.7
-            
-            MDLabel:
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
-            
-            MDLabel:
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
-
-
-            MDTextField:
-                hint_text: "Password"
-                size_hint_x:None
-                width: 250
-                icon_right: "account-key"
-                theme_text_color: "Custom"
-                text_color: 235/255, 235/255, 235/255, 0.7
-            
-            MDLabel:
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
-            
-        MDLabel:
-            theme_text_color: "Custom"
-            text_color: 235/255, 235/255, 235/255, 0.7
-            adaptive_size: True
-            halign: "center"
-            valign: "center"
-            font_style: "H5"
-            text: "SIGN IN"
-
-        GridLayout:
-            cols: 2
-            row_force_default: True
-            row_default_height: 40
-                
-            MDLabel:
-                theme_text_color: "Custom"
-                text_color: 235/255, 235/255, 235/255, 0.7
-                size_hint: root.center_x - dp(10), 50
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
-                font_style: "Subtitle1"
-                text: "SIGN UP"
-            
-            MDLabel:
-                theme_text_color: "Custom"
-                text_color: 235/255, 235/255, 235/255, 0.7
-                size_hint: root.center_x + dp(10), 50
-                adaptive_size: True
-                halign: "center"
-                valign: "center"
-                font_style: "Subtitle1"
-                text: "RESET PASSWORD"
-
-    
-
-"""
+class Login_view_Screen(Screen):
+    pass
 
 
 class MainApp(MDApp):
+
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        return Builder.load_string(SignIn)
+        return ScreenManagement()
+
+    def verify(self, email, password):
+        print(email, password)
 
 
 MainApp().run()
