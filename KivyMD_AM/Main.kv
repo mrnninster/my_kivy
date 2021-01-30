@@ -7,8 +7,8 @@
 
 <ScreenManagement>:
     transition: NoTransition()
-    # Intro_view_Screen:
-    # Login_view_Screen:
+    Intro_view_Screen:
+    Login_view_Screen:
     Signup_view_Screen:
 
 
@@ -173,6 +173,7 @@
 
 
 <Signup_view_Screen>:
+    name: "sign_up_Screen"
     MDCard:
         id: container
         md_bg_color: 0,0,0,1
@@ -286,7 +287,7 @@
 
 
     MDRaisedButton:
-        text: "SIGN IN"
+        text: "SIGN UP"
         padding_bottom: 15
         line_color: 0, 0, 0, 0
         pos_hint: {"center_x": .5, "center_y": .05}
