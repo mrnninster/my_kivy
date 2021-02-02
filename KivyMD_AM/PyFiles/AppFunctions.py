@@ -100,34 +100,10 @@ def sign_in_check(email, password, *args):
 
 # Register User With Web Server
 def register_user(first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase):
-    # url = "http://127.0.0.1:5000/mobile_create_manager"
-
-    # hash_pass = bcrypt.hashpw(
-    #     bytes(str(regpassword), 'utf-8'), bcrypt.gensalt())
-
-    # payload = {"first_name": first_name,
-    #            "last_name": last_name,
-    #            "company": company,
-    #            "email": email,
-    #            "phone_number": phone_number,
-    #            "password": hash_pass,
-    #            "use_case": usecase}
-    # files = [
-
-    # ]
-    # headers = {}
-
-    # response = requests.request(
-    #     "POST", url, headers=headers, data=payload, files=files)
-
-    # print(response.text)
-
     url = "http://127.0.0.1:5000/mobile_create_manager"
 
     hash_pass = bcrypt.hashpw(
         bytes(str(regpassword), 'utf-8'), bcrypt.gensalt())
-    hash_pass = bcrypt.hashpw(
-        bytes(str(Password), 'utf-8'), bcrypt.gensalt())
 
     payload = {"first_name": first_name,
                "last_name": last_name,
@@ -141,11 +117,10 @@ def register_user(first_name, last_name, company, email, phone_number, regpasswo
     ]
     headers = {}
 
-    print("POST", url, headers, payload, files)
     response = requests.request(
         "POST", url, headers=headers, data=payload, files=files)
 
-    res = response.text
+    return response
 
 
 # Check For Empty Fields

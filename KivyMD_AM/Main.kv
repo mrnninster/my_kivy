@@ -5,11 +5,29 @@
 #: import secondaryDarkColor PyFiles.AppFunctions.secondaryDarkColor
 #: import secondaryLightColor PyFiles.AppFunctions.secondaryLightColor
 
-<ScreenManagement>:
-    transition: NoTransition()
-    Intro_view_Screen:
-    Login_view_Screen:
-    Signup_view_Screen:
+# <ScreenManagement>:
+#     name: "all_screens"
+#     transition: NoTransition()
+#     Intro_view_Screen:
+#     Login_view_Screen:
+#     Signup_view_Screen:
+#     loader:
+
+<loader>:
+    name: "loader"
+    MDLabel:
+        theme_text_color: "Custom"
+        text_color: 255/255, 255/255, 255/255, 1
+        halign: "center"
+        valign: "center"
+        font_style: "H4"
+        text: "Signing You Up"
+
+    MDSpinner:
+        size_hint: None, None
+        size: [20, 20]
+        pos_hint: {'center_x': .5, 'center_y': .4}
+        active: True
 
 
 <Intro_view_Screen>:
@@ -142,28 +160,27 @@
                 valign: "center"
 
             GridLayout:
+                padding: 0
+                margin: 0
                 cols: 2
                 row_force_default: True
                 row_default_height: 40
                 
 
-                MDLabel:
-                    theme_text_color: "Custom"
-                    text_color: 255/255, 255/255, 255/255, 1
+                MDFlatButton:
+                    text: "SIGN UP"
+                    font_size: "10sp"
+                    padding_bottom: 15
                     adaptive_size: True
-                    halign: "center"
-                    valign: "center"
-                    font_style: "Overline"
-                    text: "SIGN UP "
+                    line_color: 0, 0, 0, 0
+                    on_press: root.manager.current = "sign_up_Screen"
 
-                MDLabel:
-                    theme_text_color: "Custom"
-                    text_color: 255/255, 255/255, 255/255, 1
+                MDFlatButton:
+                    text: "RESET PASSWORD"
+                    font_size: "10sp"
+                    padding_bottom: 15
                     adaptive_size: True
-                    halign: "left"
-                    valign: "center"
-                    font_style: "Overline"
-                    text: " RESET PASSWORD"
+                    line_color: 0, 0, 0, 0
 
             MDLabel:
                 adaptive_size: True
@@ -290,5 +307,12 @@
         text: "SIGN UP"
         padding_bottom: 15
         line_color: 0, 0, 0, 0
-        pos_hint: {"center_x": .5, "center_y": .05}
+        pos_hint: {"center_x": .8, "center_y": .05}
         on_release: app.submit_form(first_name.text,last_name.text,company.text,email.text,phone_number.text,regpassword.text,vregpassword.text,usecase.text)
+
+    MDRaisedButton:
+        text: "LOG IN"
+        padding_bottom: 15
+        line_color: 0, 0, 0, 0
+        pos_hint: {"center_x": .2, "center_y": .05}
+        on_release: root.manager.current = "log_in_Screen"
