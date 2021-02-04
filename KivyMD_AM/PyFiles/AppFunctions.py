@@ -1,6 +1,7 @@
 # Imports
 import re
 import bcrypt
+import sqlite3
 import requests
 
 # Colours In Use
@@ -12,6 +13,43 @@ secondaryLightColor = "#8444ba"
 secondaryDarkColor = "#20005b"
 primaryTextColor = "#ffffff"
 secondaryTextColor = "#ffffff"
+
+# Create DataBase
+
+
+def create_db(first_name, last_name, company, email, phone_number, regpassword, usecase, status):
+
+    # db connection
+    conn = sqlite3.connect("user.db")
+
+    # create cursor
+    c = conn.cursor()
+
+    # create User Table
+    try:
+        c.execute(""" CREATE TABLE  userInfo(
+            fname text,
+            lname text,
+            company text,
+            Email text,
+            userNumber text,
+            password text,
+            usecase text,
+            status integer
+        )""")
+
+    except:
+        pass
+
+    # Populate Table
+    c.execute(
+        f"INSERT INTO userInfo VALUES {first_name, last_name, company, email, phone_number, regpassword, usecase, status}")
+
+    # commit db transactions
+    conn.commit()
+
+    # close connection
+    conn.close()
 
 
 # Functions
@@ -65,40 +103,55 @@ def verify(email, password, *args):
 
 def sign_in_check(email, password, *args):
 
-    # Verify User Data
+    # Check for input standard
     verify(email, password)
 
     # Validate User
-    # try:
-    #     # Query Database
-    #     # Verify Credentials
-    #     # Store Vefified Credentials for auto login
-    #     Manager_info = Managers.query.filter_by(Email=email).all()
-    #     password = bytes(str(password), 'utf-8')
+    try:
+        # db connection
+        conn = sqlite3.connect("user.db")
 
-    #     if bcrypt.checkpw(password, Manager_info[0].Password):
-    #         print('Succefully Logged In ' +
-    #                 str(Manager_info[0].Author_Name))
-    #         session.permanent = True
-    #         session['Activity_Manager_Name'] = Manager_info[0].Author_Name
-    #         session['Email'] = Manager_info[0].Email
-    #         session['Activity_Manager'] = Manager_info[0].Phone_Num
-    #         session['Manager_mail_hash'] = hash_mail
-    #         session["Balance"] = Manager_info[0].Current_Balance
+        # create cursor
+        c = conn.cursor()
 
-    #         Balance = session['Balance']
-    #         all_zones = pytz.all_timezones
-    #         return(redirect(url_for("today")))
-    #     else:
-    #         info = 'Unable To Verify Password'
-    #         return render_template('demo1.html', info=info)
-    # except:
-    #     return "Inavlid Username or password"
+        try:
+            # Query Database
+            c.execute(
+                f"SELECT * FROM userInfo WHERE Email = 'adefolahan.akinsola@agroai.farm'")
 
-    print(email, password)
+        except:
+            return{["Failed", "Invalid Email, Verify Email and Try Again"]}
 
+        else:
+            # Try Fetching UserInfo
+            try:
+                # Offline Query
+                user = c.fetchone()
+
+                # Online Query
+                if user == None:
+
+                    # Connect To Server and Return Response
+                    try:
+                        user = server_query(email, password)
+                        return(user.json())
+
+                    except:
+                        return(["Failed", "Unable To Connect To Server, Internet Connection Required"])
+
+                # Query Response
+                if user == None:
+                    return(["Failed", "Invalid Credentials"])
+
+            except Exception as e:
+                return(["Failed", "App Error, kindly report to support@agroai.farm, \nThanks."])
+
+    except Exception as e:
+        return{["Failed", "Verify Email and Try Again"]}
 
 # Register User With Web Server
+
+
 def register_user(first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase):
     url = "http://127.0.0.1:5000/mobile_create_manager"
 
@@ -115,6 +168,24 @@ def register_user(first_name, last_name, company, email, phone_number, regpasswo
     files = [
 
     ]
+    headers = {}
+
+    response = requests.request(
+        "POST", url, headers=headers, data=payload, files=files)
+
+    return response
+
+
+# Query Server For User Info
+def server_query(email, password):
+    url = "http://127.0.0.1:5000/mobile_check_manager"
+
+    hash_pass = password
+
+    payload = {"email": email, "password": hash_pass}
+
+    files = []
+
     headers = {}
 
     response = requests.request(
