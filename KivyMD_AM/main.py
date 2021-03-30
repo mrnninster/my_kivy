@@ -26,6 +26,14 @@ Window.size = (300, 500)
 
 
 # Screens
+class loader(Screen):
+    pass
+
+
+class log_in_loader(Screen):
+    pass
+
+
 class Intro_view_Screen(Screen):
     pass
 
@@ -42,7 +50,7 @@ class Reset_pass_Screen(Screen):
     pass
 
 
-class loader(Screen):
+class Todays_view_Screen(Screen):
     pass
 
 
@@ -50,11 +58,13 @@ class MainApp(MDApp):
     def build(self):
         # Scren Widgets
         self.sm = ScreenManager(transition=NoTransition())
+        self.sm.add_widget(loader(name="loader"))
+        self.sm.add_widget(log_in_loader(name="log_in_loader"))
         self.sm.add_widget(Intro_view_Screen(name="intro_Screen"))
         self.sm.add_widget(Login_view_Screen(name="log_in_Screen"))
         self.sm.add_widget(Signup_view_Screen(name="sign_up_Screen"))
         self.sm.add_widget(Reset_pass_Screen(name="reset_pass_Screen"))
-        self.sm.add_widget(loader(name="loader"))
+        self.sm.add_widget(Todays_view_Screen(name="todays_Screen"))
         ssm = self.sm
 
         # Change Screen
@@ -84,7 +94,46 @@ class MainApp(MDApp):
         return ssm
 
     def check(self, email, password):
-        AppFunctions.sign_in_check(email, password)
+        
+        # Remain At Sign Up Screen
+        self.root.current = "log_in_loader"
+        
+        # Log User In
+        try:
+            check_response = AppFunctions.sign_in_check(email, password)
+
+            if (check_response[0] == "Failed"):
+                # Failed Response
+                self.dialog = MDDialog(
+                    type="alert",
+                    title="Failed",
+                    text=check_response[1],
+                    size_hint=[None, None],
+                    size=[250, 200],
+                )
+                self.dialog.open()
+
+                # Remain At Log In Screen
+                self.root.current = "log_in_Screen"
+
+            elif(check_response[0] == "Success"):
+                print(check_response[1])
+                print("Account Logged In")
+
+                # Redirect to Todays Page With The Contents Obtained
+
+        except:
+            # Sign Up Exception Dialog Response
+            self.dialog = MDDialog(
+                type="alert",
+                text="We are currently unable to sign you in.\nKindly contact support@agroai.farm for assistance.",
+                size_hint=[None, None],
+                size=[250, 200],
+            )
+            self.dialog.open()
+
+            # Return To Log In Screen
+            self.root.current = "log_in_Screen"
 
     def submit_form(self, first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase):
 
@@ -121,8 +170,7 @@ class MainApp(MDApp):
                 res = ["Success", "Please wait..."]
 
         # Connectivity Error
-        except Exception as e:
-            print(str(e))
+        except:
             dialog = MDDialog(
                 title="Sign Up Fail", text="Something went wrong while signing you up, try again", size_hint=[None, None], size=[200, 150]
             )
@@ -140,41 +188,77 @@ class MainApp(MDApp):
                 self.root.current = "loader"
 
                 # Make Sign Up Request To Server
-                Req_res = AppFunctions.register_user(
-                    first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase)
-
-                # Print Request Response
-                Req_res = Req_res.json()
-
-                # Check Request Response
-                if Req_res["status"] == "Success":
-
+                try:
+                    Req_res = AppFunctions.register_user(
+                        first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase)
+                except:
                     # Success Dialog Response
                     self.dialog = MDDialog(
                         type="alert",
-                        title="Success",
-                        text=Req_res["response"],
+                        text="Network Connection Failed",
                         size_hint=[None, None],
                         size=[250, 200],
                     )
                     self.dialog.open()
 
-                    # Switch To Log In Screen
-                    self.root.current = "log_in_Screen"
-
-                else:
-                    # Failed Dialog Response
-                    self.dialog = MDDialog(
-                        type="alert",
-                        title="Failed",
-                        text=Req_res["response"],
-                        size_hint=[None, None],
-                        size=[250, 200],
-                    )
-                    self.dialog.open()
-
-                    # Return to sign up Screen
+                    # Remain At Sign Up Screen
                     self.root.current = "sign_up_Screen"
+
+                # When Connection Succeeds
+                else:
+                    # Print Request Response
+                    Req_res = Req_res.json()
+
+                    # Check Request Response
+                    if Req_res["status"] == "Success":
+
+                        # Create Local Storage
+                        status = 0  # Defaults to not signed in
+                        AppFunctions.create_db(first_name, last_name, company, email.lower(
+                        ), phone_number, regpassword, usecase, status)
+
+                        # Success Dialog Response
+                        self.dialog = MDDialog(
+                            type="alert",
+                            title="Success",
+                            text=Req_res["response"],
+                            size_hint=[None, None],
+                            size=[250, 200],
+                        )
+                        self.dialog.open()
+
+                        # Switch To Log In Screen
+                        self.root.current = "log_in_Screen"
+
+                    else:
+                        # Failed Dialog Response
+                        self.dialog = MDDialog(
+                            type="alert",
+                            title="Failed",
+                            text=Req_res["response"],
+                            size_hint=[None, None],
+                            size=[250, 200],
+                        )
+                        self.dialog.open()
+
+                        # Return to sign up Screen
+                        self.root.current = "sign_up_Screen"
+
+    def recover(self, email, *args):
+        # Print Email
+        print(email)
+
+        # Failed Dialog Response
+        self.dialog = MDDialog(
+            type="alert",
+            text="A recovery email has been sent to you, kindly check your inbox.\n\nThanks.",
+            size_hint=[None, None],
+            size=[250, 200],
+        )
+        self.dialog.open()
+
+        # Return to sign up Screen
+        self.root.current = "log_in_Screen"
 
 
 # Run App

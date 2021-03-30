@@ -29,6 +29,23 @@
         pos_hint: {'center_x': .5, 'center_y': .4}
         active: True
 
+
+<log_in_loader>:
+    name: "log_in_loader"
+    MDLabel:
+        theme_text_color: "Custom"
+        text_color: 255/255, 255/255, 255/255, 1
+        halign: "center"
+        valign: "center"
+        text: "Logging You In \nPlease Wait"
+
+    MDSpinner:
+        size_hint: None, None
+        size: [20, 20]
+        pos_hint: {'center_x': .5, 'center_y': .4}
+        active: True
+
+
 <Reset_pass_Screen>:
     name: "reset_pass_Screen"
     MDCard:
@@ -65,6 +82,15 @@
             line_color: 0, 0, 0, 0
             pos_hint: {"center_x": .5, "center_y": .05}
             on_release: app.recover(Recovery_Mail.text)
+    
+    MDFlatButton:
+        text: "BACK"
+        font_size: "10sp"
+        padding_bottom: 15
+        adaptive_size: True
+        line_color: 0, 0, 0, 0
+        on_press: root.manager.current = "log_in_Screen"
+
 
 <Intro_view_Screen>:
     name: "intro_Screen"
@@ -352,5 +378,7 @@
         pos_hint: {"center_x": .2, "center_y": .05}
         on_release: root.manager.current = "log_in_Screen"
 
-<todays_view_Screen>:
-    name: "tadays_Screen"
+<Todays_view_Screen>:
+    name: "todays_Screen"
+    MDGridLayout:
+        md_bg_color:1,1,1,1

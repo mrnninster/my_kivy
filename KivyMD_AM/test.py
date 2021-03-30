@@ -26,10 +26,15 @@ Window.size = (300, 500)
 
 
 # Screens
+""" Loading Screens """
 class loader(Screen):
     pass
 
 
+class log_in_loader(Screen):
+    pass
+
+""" Content Screens """
 class Intro_view_Screen(Screen):
     pass
 
@@ -55,6 +60,7 @@ class MainApp(MDApp):
         # Scren Widgets
         self.sm = ScreenManager(transition=NoTransition())
         self.sm.add_widget(loader(name="loader"))
+        self.sm.add_widget(log_in_loader(name="log_in_loader"))
         self.sm.add_widget(Intro_view_Screen(name="intro_Screen"))
         self.sm.add_widget(Login_view_Screen(name="log_in_Screen"))
         self.sm.add_widget(Signup_view_Screen(name="sign_up_Screen"))
@@ -88,20 +94,127 @@ class MainApp(MDApp):
 
         return ssm
 
+
+    """ User Log In Function take required variables 'email','password' """
     def check(self, email, password):
-        AppFunctions.sign_in_check(email, password)
 
+        # Login Loader Screen
+        self.root.current = "log_in_loader"
+        
+        # Log User In
+        try:
+            check_response = AppFunctions.sign_in_check(email, password)
+
+            if (check_response[0] == "Failed"):
+                # Failed Response
+                self.dialog = MDDialog(
+                    type="alert",
+                    title="Failed",
+                    text=check_response[1],
+                    size_hint=[None, None],
+                    size=[250, 200],
+                )
+                self.dialog.open()
+
+                # Remain At Log In Screen
+                self.root.current = "log_in_Screen"
+
+            elif(check_response[0] == "Success"):
+                # User Info
+                print(check_response[1])
+
+                # Todays Page Data
+                try:
+                    # Check If User has logged In before
+                    if (check_response[1][7] == 0):
+
+                        try:
+                            # Create Task Tables If Not
+                            Task_Service = AppFunctions.Task_Table()
+
+                        except:
+                            # Failed Response
+                            self.dialog = MDDialog(
+                                type="alert",
+                                text="SET UP FAILED",
+                                size_hint=[None, None],
+                                size=[250, 200],
+                            )
+                            self.dialog.open()
+
+                            # Remain At Log In Screen
+                            self.root.current = "log_in_Screen"
+
+                        else:
+                            # If system was Unable To Create DB Table
+                            if (Task_Service[0] == "Failed"):
+
+                                # Failed Response
+                                self.dialog = MDDialog(
+                                    type="alert",
+                                    title="Failed",
+                                    text=Task_Service[1],
+                                    size_hint=[None, None],
+                                    size=[250, 200],
+                                )
+                                self.dialog.open()
+
+                                # Remain At Log In Screen
+                                self.root.current = "log_in_Screen"
+                        
+                            else:
+
+                                # Update The User Account Status To Signed In
+                                status = AppFunctions.Status_Update(email,password)
+
+                                if (status[0] == "Failed"):
+                                    
+                                    # Failed Response
+                                    self.dialog = MDDialog(
+                                        type="alert",
+                                        title="Failed",
+                                        text=status[1],
+                                        size_hint=[None, None],
+                                        size=[250, 200],
+                                    )
+                                    self.dialog.open()
+                
+                except Exception as e:
+                    print(str(e))
+                    self.root.current = log_in_Screen
+
+                else:
+                    print("Fetching Todays Tasks")
+                    # # Fetch Tasks Stored On Mobile For Today
+                    # Today_Local = AppFunctions.Today_Local()
+
+                    # # Fetch Task Stored On Server For Today
+                    # Today_Server = AppFunctions.Today_Server()
+
+                    # # Redirect To User Landing Page
+                    # self.root.current = "todays_Screen"
+
+                    # # Sort and Display all Tasks For Today
+
+
+        except:
+            # Sign Up Exception Dialog Response
+            self.dialog = MDDialog(
+                type="alert",
+                text="We are currently unable to sign you in.\nKindly contact support@agroai.farm for assistance.",
+                size_hint=[None, None],
+                size=[250, 200],
+            )
+            self.dialog.open()
+
+            # Return To Log In Screen
+            self.root.current = "log_in_Screen"
+
+    
+
+
+    """ User Registration Function, takes requored variables 'first_name', 'last_name', 'phone_number', 'email', 'regpassword', 'vregpassword' and 'usecase' and a Non required variable 'company' """
     def submit_form(self, first_name, last_name, company, email, phone_number, regpassword, vregpassword, usecase):
-
-        # Store User Info and login status
-        # status = 0
-        # first_name = "adefolahan"
-        # last_name = "akinsola"
-        # company = "neural"
-        # email = "adefolahan.akinsola@agroai.farm"
-        # phone_number = "+2349071831303"
-        # regpassword = "IamD@hmohlar02"
-        # usecase = "Just Testing"
 
         # Sign Up Error Checks
         try:
@@ -136,8 +249,7 @@ class MainApp(MDApp):
                 res = ["Success", "Please wait..."]
 
         # Connectivity Error
-        except Exception as e:
-            print(str(e))
+        except:
             dialog = MDDialog(
                 title="Sign Up Fail", text="Something went wrong while signing you up, try again", size_hint=[None, None], size=[200, 150]
             )
@@ -211,9 +323,10 @@ class MainApp(MDApp):
                         # Return to sign up Screen
                         self.root.current = "sign_up_Screen"
 
+
+
+    """ Password Recovery Function, takes required password 'email' """
     def recover(self, email, *args):
-        # Print Email
-        print(email)
 
         # Failed Dialog Response
         self.dialog = MDDialog(
